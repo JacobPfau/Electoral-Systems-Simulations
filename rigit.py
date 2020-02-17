@@ -11,7 +11,7 @@ def main():
     left_utils = {'a': 10, 'b':8, 'c': 6, 'd':0}
     right_utils = {'a': 0, 'b':2, 'c': 5, 'd':10}
     regrets = {'approval':[], 'plurality':[]}
-    for i in range(10):
+    for i in range(3):
         party_affil = np.random.binomial(1,0.55,size=100)
         voters = []
         for v in range(30): 
@@ -28,6 +28,8 @@ def main():
         print('Election winner is:', vote.winner)
         vote.get_regret()
         regrets['approval'].append(vote.regret)
+        top_2 = sorted(list(vote.tally.items()), key=lambda x: x[1], reverse=True)[:2]
+        print('Votes by candidate', top_2)
         print('Regret:', vote.regret)
 
         print('Under Plurality Voting: ')
@@ -38,7 +40,11 @@ def main():
         print('Election winner is:', vote.winner)
         vote.get_regret()
         regrets['plurality'].append(vote.regret)
+        top_2 = sorted(list(vote.tally.items()), key=lambda x: x[1], reverse=True)[:2]
+        print('Votes by candidate', top_2)
         print('Regret:', vote.regret)
+        print('_________________________')
+
 
     print(np.mean(regrets['approval']), np.mean(regrets['plurality']))
 if __name__=="__main__":
