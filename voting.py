@@ -6,6 +6,7 @@ class ElectoralSystem(ABC):
         self.voters = voters
         self.candidates = candidates
         self.tally = dict()
+        self.winner = None
 
     def compute_votes(self,):
         for voter in self.voters: _ = voter.policy(self)

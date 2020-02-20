@@ -1,7 +1,6 @@
-from abc import ABC, abstractmethod
 import numpy as np
 
-class Voter(ABC):
+class Voter():
     def __init__(self, utilities=dict(), beliefs=None):
         '''
         Params
@@ -13,51 +12,55 @@ class Voter(ABC):
         self.beliefs = beliefs
         self.vote = dict()
 
-    @abstractmethod
-    def policy(self, electoral_system):
-        pass
-
-class Laziest_Voter(Voter):
-    def policy(self, electoral_system):
-        if electoral_system.name=='ApprovalVote' or electoral_system.name=='PluralityVote': # Should separate these for clarity/consistency
-            favorite = [*list(self.utilities.items())[0]]
-            for candidate, utility in self.utilities.items():
-                if utility>favorite[1]: favorite = [candidate, utility]
-            self.vote[favorite[0]] = 1
-            if electoral_system.name=='ApprovalVote': # Fill in the other candidates with 0s
-                for candidate in self.utilities.keys():
-                    if candidate!= favorite[0]: self.vote[candidate] = 0
-            return self.vote
-        else:
-            raise NotImplementedError
-
-class Lazy_Voter(Voter):
-    def policy(self, electoral_system):
-        if electoral_system.name=='ApprovalVote':
-            utility_list = list(self.utilities.items())
-            utility_list = sorted(utility_list, key=lambda x:x[1], reverse=True)
-            votes = {candidate:0 for candidate in self.utilities.keys()}
-            votes[utility_list[0][0]]=1
-            votes[utility_list[1][0]]=1
-            self.vote = votes
-            return self.vote
-        else:
-            raise NotImplementedError
+    def approval_policy(self,):
+        raise NotImplementedError
+    def plurality_policy(self,):
+        raise NotImplementedError
+    def irv_policy(self,):
+        raise NotImplementedError
+    def quadratic_policy(self,):
+        raise NotImplementedError
 
 class Honest_Voter(Voter):
-    def policy(self, electoral_system):
-        if electoral_system.name=='ApprovalVote':
-            median_utility = np.median(list(self.utilities.values()))
-            votes = {candidate:0 for candidate in self.utilities.keys()}
-            for candidate, utility in self.utilities.items():
-                if utility>=median_utility: votes[candidate]=1
-            self.vote = votes
-            return self.vote
-        elif electoral_system.name=='PluralityVote':
-            favorite = [*list(self.utilities.items())[0]]
-            for candidate, utility in self.utilities.items():
-                if utility>favorite[1]: favorite = [candidate, utility]
-            self.vote[favorite[0]] = 1
-            return self.vote
-        else:
-            raise NotImplementedError
+    def approval_policy(self,):
+        # Votes for all candidates with >= voters median utility
+        median_utility = np.median(list(self.utilities.values()))
+        votes = {candidate:0 for candidate in self.utilities.keys()}
+        for candidate, utility in self.utilities.items():
+            if utility>=median_utility: votes[candidate]=1
+        self.vote = votes
+        return self.vote
+    def plurality_policy(self):
+        favorite = [*list(self.utilities.items())[0]]
+        for candidate, utility in self.utilities.items():
+            if utility>favorite[1]: favorite = [candidate, utility]
+        self.vote[favorite[0]] = 1
+        return self.vote
+
+class Laziest_Voter(Honest_Voter):
+    def approval_policy(self,):
+        # Only vote for one candidate
+        favorite = [*list(self.utilities.items())[0]]
+        for candidate, utility in self.utilities.items():
+            if utility>favorite[1]: favorite = [candidate, utility]
+        self.vote[favorite[0]] = 1
+        for candidate in self.utilities.keys():
+            if candidate!= favorite[0]: self.vote[candidate] = 0
+        return self.vote
+    def plurality_policy(self):
+        # Behave honestly here
+        return super().plurality_policy()
+
+class Lazy_Voter(Honest_Voter):
+    def approval_policy(self,):
+        # Vote for top two candidates regardless of num candidates
+        utility_list = list(self.utilities.items())
+        utility_list = sorted(utility_list, key=lambda x:x[1], reverse=True)
+        votes = {candidate:0 for candidate in self.utilities.keys()}
+        votes[utility_list[0][0]]=1
+        votes[utility_list[1][0]]=1
+        self.vote = votes
+        return self.vote
+    def plurality_policy(self):
+        # Behave honestly here
+        return super().plurality_policy()
