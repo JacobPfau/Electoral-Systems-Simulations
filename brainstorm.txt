@@ -1,0 +1,21 @@
+What to model?
+
+    Candidates: far L, center L, center R, far R i.e. 2-4 candidates (possibly 2-7 with independents: liberatarians, greens, billionaires etc.)
+
+    Utilities: peaked at one candidate, trough at opposing party candidates, unknown for others
+        How do we understand these utilities in order to make regret calculations somehow meaningful?
+            -economically? (expected vs actual return on election?)
+            -preferences with intensity? (~ normalized self-reported utilities)
+            -tradit'l utility of immediate outcome of election (~ happiness at reading headline)
+        Ideally other conclusions are relatively unaffected by above choice
+
+    Disenfranchisement as result of sub-optimal voting:
+        -By regret
+        -By likelihood of shifting vote i.e. probabilistic impact/voice calculation
+        
+        
+References:
+https://casparoesterheld.com/2017/06/18/summary-of-achen-and-bartels-democracy-for-realists/
+'Lau and Redlawsk (1997; 2006) “found that about 70% of voters, on average, chose the candidate who best matched their own expressed preferences.” (p. 40)'
+'He found that about 3% of voters were clearly classiffiable as “ideologues,” with another 12% qualifying as “near-ideologues”; the vast majority of voters (and an even larger proportion of nonvoters) seemed to think about parties and candidates in terms of group interests or the “nature of the times,” or in ways that conveyed “no shred of policy significance whatever” (Converse 1964, 217–218; also Campbell et al. 1960, chap. 10).”'
+'Another interesting point they make is that it is usually the least-informed voters who decide who wins an election because the non-partisan swing voters tend to be relatively uninformed (p. 312, also p.32).'
