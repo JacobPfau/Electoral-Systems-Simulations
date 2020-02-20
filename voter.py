@@ -30,12 +30,14 @@ class Honest_Voter(Voter):
             if utility>=median_utility: votes[candidate]=1
         self.vote = votes
         return self.vote
+
     def plurality_policy(self):
         favorite = [*list(self.utilities.items())[0]]
         for candidate, utility in self.utilities.items():
             if utility>favorite[1]: favorite = [candidate, utility]
         self.vote[favorite[0]] = 1
         return self.vote
+
 
 class Laziest_Voter(Honest_Voter):
     def approval_policy(self,):
@@ -50,6 +52,7 @@ class Laziest_Voter(Honest_Voter):
     def plurality_policy(self):
         # Behave honestly here
         return super().plurality_policy()
+
 
 class Lazy_Voter(Honest_Voter):
     def approval_policy(self,):
