@@ -15,6 +15,13 @@ What to model?
         
         
 References:
+https://github.com/electionscience/vse-sim
+https://link.springer.com/article/10.1007%2Fs11127-012-9935-y
+https://link.springer.com/book/10.1007%2F978-3-642-20441-8
+https://d3n8a8pro7vhmx.cloudfront.net/fairvote/pages/2298/attachments/original/1449512865/ApprovalVotingJuly2011.pdf
+https://forum.effectivealtruism.org/posts/8Rn2gw7escCc2Rmb7/thoughts-on-electoral-reform
+https://www.lesswrong.com/users/jameson-quinn
+
 https://casparoesterheld.com/2017/06/18/summary-of-achen-and-bartels-democracy-for-realists/
 'Lau and Redlawsk (1997; 2006) “found that about 70% of voters, on average, chose the candidate who best matched their own expressed preferences.” (p. 40)'
 'He found that about 3% of voters were clearly classiffiable as “ideologues,” with another 12% qualifying as “near-ideologues”; the vast majority of voters (and an even larger proportion of nonvoters) seemed to think about parties and candidates in terms of group interests or the “nature of the times,” or in ways that conveyed “no shred of policy significance whatever” (Converse 1964, 217–218; also Campbell et al. 1960, chap. 10).”'
