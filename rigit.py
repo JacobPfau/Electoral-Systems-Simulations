@@ -1,5 +1,5 @@
 import voter
-import voting
+import elections
 import numpy as np
 
 def main():
@@ -22,7 +22,7 @@ def main():
             else: voters.append(voter.Honest_Voter(right_utils))
         
         print('Under Approval Voting: ')
-        vote = voting.ApprovalVote(voters, candidates)
+        vote = elections.ApprovalVote(voters, candidates)
         vote.compute_votes()
         vote.aggregate_votes()
         print('Election winner is:', vote.winner)
@@ -34,7 +34,7 @@ def main():
 
         print('Under Plurality Voting: ')
         for person in voters: person.vote = dict()
-        vote = voting.PluralityVote(voters, candidates)
+        vote = elections.PluralityVote(voters, candidates)
         vote.compute_votes()
         vote.aggregate_votes()
         print('Election winner is:', vote.winner)
