@@ -1,3 +1,13 @@
+Roadmap:
+    Endogenous candidate existence:
+        candidate existence as function of voter ideologies
+        ex: 
+            2 normal dist. of voters in ideology vec space (IVS)
+            1 normal dist of candidates in IVS
+            candidates do 1(+?) step bounded distance optimization to capture more voters
+            voters' likelihood to bullet vote (or otherwise vote non-honestly) correlated with ideology
+
+
 What to model?
 
     Candidates: far L, center L, center R, far R i.e. 2-4 candidates (possibly 2-7 with independents: liberatarians, greens, billionaires etc.)
@@ -12,6 +22,9 @@ What to model?
     Disenfranchisement as result of sub-optimal voting:
         -By regret
         -By likelihood of shifting vote i.e. probabilistic impact/voice calculation
+
+What voting methods are transparent?
+    What do we mean by this? (can get estimate of election from subset of population? Simplicity? etc.)
         
         
 References:

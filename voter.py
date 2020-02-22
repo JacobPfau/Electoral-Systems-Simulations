@@ -1,16 +1,22 @@
 import numpy as np
 
 class Voter():
-    def __init__(self, utilities=dict(), beliefs=None):
+    def __init__(self, ideology=None, utilities=None, beliefs=None):
         '''
         Params
+        ideology: np array, defines the voters location in n-dimensional ideology vector space
         policy: dict str to object, defines the voter's policy under electoral systems
-        utility: dict str to float, defines the voter's utility gained from electoral outcomes
-        beliefs: ...
+        utility: None or dict str to float, defines the voter's utility gained from electoral outcomes
+        beliefs: not implemented, for strategic voting purposes
         '''
         self.utilities = utilities
         self.beliefs = beliefs
+        self.ideology = ideology
+
         self.vote = dict()
+    
+    def generate_utilities(self, candidate_ideologies):
+        raise NotImplementedError
 
     def approval_policy(self,):
         raise NotImplementedError
