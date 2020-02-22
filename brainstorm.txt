@@ -16,7 +16,7 @@ What to model?
         
 References:
 https://github.com/electionscience/vse-sim
-https://link.springer.com/article/10.1007%2Fs11127-012-9935-y
+https://link.springer.com/article/10.1007%2Fs11127-012-9935-y p260 for simulation lit links
 https://link.springer.com/book/10.1007%2F978-3-642-20441-8
 https://d3n8a8pro7vhmx.cloudfront.net/fairvote/pages/2298/attachments/original/1449512865/ApprovalVotingJuly2011.pdf
 https://forum.effectivealtruism.org/posts/8Rn2gw7escCc2Rmb7/thoughts-on-electoral-reform
