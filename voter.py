@@ -20,6 +20,7 @@ class Voter():
         raise NotImplementedError
     
     def compute_vote(self, electoral_system):
+        self.vote = dict()
         if electoral_system=='ApprovalVote': self.approval_policy()
         elif electoral_system=='PluralityVote': self.plurality_policy()
         elif electoral_system=='InstantRunoffVote': self.irv_policy()
