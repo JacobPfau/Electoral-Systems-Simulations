@@ -24,6 +24,7 @@ class Voter():
         if electoral_system=='ApprovalVote': self.approval_policy()
         elif electoral_system=='PluralityVote': self.plurality_policy()
         elif electoral_system=='InstantRunoffVote': self.irv_policy()
+        elif electoral_system=='QuadraticVote': self.quadratic_policy()
 
     def approval_policy(self,):
         raise NotImplementedError
@@ -54,6 +55,13 @@ class Honest_Voter(Voter):
         self.vote = [pair[0] for pair in sorted_candidates]
         return self.vote
 
+    def quadratic_policy(self):
+        utility_list = list(self.utilities.items())
+        utility_values = [pair[1] for pair in utility_list]
+        utility_mean, utility_std = np.mean(utility_values), np.std(utility_values)
+        self.vote = {pair[0]:(pair[1]-utility_mean)/utility_std for pair in utility_list}
+        return self.vote
+
 class Laziest_Voter(Honest_Voter):
     def approval_policy(self,):
         '''
@@ -63,8 +71,10 @@ class Laziest_Voter(Honest_Voter):
         for candidate in self.utilities.keys():
             if candidate!= favorite_candidate: self.vote[candidate] = 0
         return self.vote
+
     def plurality_policy(self):
         return super().plurality_policy()
+
     def irv_policy(self):
         '''
         Swap one of the non-favorite candidates with adjacent candidate
@@ -77,6 +87,16 @@ class Laziest_Voter(Honest_Voter):
         self.vote[swap-1] = to_swap
         return self.vote
 
+    def quadratic_policy(self):
+        '''
+        Bullet vote
+        '''
+        utility_list = list(self.utilities.items())
+        max_utility = max(utility_list, key=lambda x:x[1])[1]
+        bullet_utilities = [1 if value[1]==max_utility else 0 for value in utility_list]
+        utility_mean, utility_std = np.mean(bullet_utilities), np.std(bullet_utilities)
+        self.vote = {pair[0]:(bullet_utilities[p]-utility_mean)/utility_std for p,pair in enumerate(utility_list)}
+        return self.vote
 
 class Lazy_Voter(Honest_Voter):
     def approval_policy(self,):

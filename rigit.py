@@ -8,7 +8,7 @@ def main():
     election_sample_size = 1000
     verbose = False
 
-    if verbose: print('We assume two sets of party-like sets of utilities')
+    if verbose: print('We assume party-like sets of utilities')
     candidates = ['a', 'b', 'c', 'd']
     far_left_utils = {'a': 10, 'b':8, 'c': 6, 'd':0}
     left_utils = {'a': 6, 'b':10, 'c': 6, 'd':0}
@@ -16,7 +16,7 @@ def main():
     far_right_utils = {'a': 0, 'b':2, 'c': 5, 'd':10}
     utils = [far_left_utils, left_utils, right_utils, far_right_utils]
 
-    regrets = {'approval':[], 'plurality':[], 'IRV':[]}
+    regrets = {'approval':[], 'plurality':[], 'IRV':[], 'QV':[]}
     for i in range(election_sample_size):
         p = [0.4,0.35,0.2,0.05]
         random.shuffle(p)
@@ -55,9 +55,21 @@ def main():
         top_2 = sorted(list(vote.tally.items()), key=lambda x: x[1], reverse=True)[:2]
         if verbose: print('Votes by candidate', top_2)
         if verbose: print('Regret:', vote.regret)
+
+        if verbose: print('Under QV: ')
+        for person in voters: person.vote = dict()
+        vote = elections.QuadraticVote(voters, candidates)
+        vote.compute_votes()
+        vote.aggregate_votes()
+        vote.get_regret()
+        regrets['QV'].append(vote.regret)
+        top_2 = sorted(list(vote.tally.items()), key=lambda x: x[1], reverse=True)[:2]
+        if verbose: print('Votes by candidate', top_2)
+        if verbose: print('Regret:', vote.regret)
+
         if verbose: print('_________________________')
 
 
-    print('Plurality %.4f, IRV %.4f, Approval %.4f' %(np.mean(regrets['plurality']), np.mean(regrets['IRV']), np.mean(regrets['approval'])))
+    print('Plurality %.4f, IRV %.4f, Approval %.4f, QV %.4f' %(np.mean(regrets['plurality']), np.mean(regrets['IRV']), np.mean(regrets['approval']),  np.mean(regrets['QV'])))
 if __name__=="__main__":
     main() 

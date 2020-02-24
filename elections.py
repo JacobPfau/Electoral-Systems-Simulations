@@ -71,3 +71,13 @@ class InstantRunoffVote(ElectoralSystem):
                 self.winner = max(self.tally.items(), key=lambda x:x[1])[0]
             else: 
                 losing_candidates.append(min(self.tally.items(), key=lambda x:x[1])[0])
+
+class QuadraticVote(ElectoralSystem):
+    name = 'QuadraticVote'
+
+    def aggregate_votes(self):
+        for candidate in self.candidates: self.tally[candidate]=0
+        for voter in self.voters:
+            for candidate, vote in voter.vote.items():
+                self.tally[candidate] = self.tally[candidate]+vote
+        self.winner = max(self.tally.items(), key=lambda x:x[1])[0]
