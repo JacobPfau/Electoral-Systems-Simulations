@@ -9,7 +9,7 @@ class ElectoralSystem(ABC):
         self.winner = None
 
     def compute_votes(self,):
-        for voter in self.voters: _ = voter.policy(self)
+        for voter in self.voters: _ = voter.compute_vote(self.name)
 
     @abstractmethod
     def aggregate_votes(self,):
@@ -32,10 +32,7 @@ class ApprovalVote(ElectoralSystem):
             for candidate, vote in voter.vote.items():
                 assert vote==0 or vote==1
                 self.tally[candidate] = self.tally[candidate]+vote
-        favorite = [*list(self.tally.items())[0]]
-        for candidate, votes in self.tally.items():
-            if votes>favorite[1]: favorite = [candidate, votes]
-        self.winner = favorite[0]
+        self.winner = max(self.tally.items(), key=lambda x:x[1])[0]
 
 class PluralityVote(ElectoralSystem):
     name = 'PluralityVote'
@@ -52,7 +49,25 @@ class PluralityVote(ElectoralSystem):
             for candidate, vote in voter.vote.items(): # trivial i.e. one item loop
                 assert vote==0 or vote==1
                 self.tally[candidate] = self.tally[candidate]+vote
-        favorite = [*list(self.tally.items())[0]]
-        for candidate, votes in self.tally.items():
-            if votes>favorite[1]: favorite = [candidate, votes]
-        self.winner = favorite[0]
+        self.winner = max(self.tally.items(), key=lambda x:x[1])[0]
+
+class InstantRunoffVote(ElectoralSystem):
+    name = 'InstantRunoffVote'
+
+    def aggregate_votes(self):
+        for candidate in self.candidates: self.tally[candidate]=0
+
+        total_votes = len(self.voters)
+        losing_candidates = []
+        while self.winner is None:
+            for voter in self.voters:
+                top_preference = voter.vote[-1]
+                while top_preference in losing_candidates:
+                    voter.vote.pop()
+                    top_preference = voter.vote[-1]
+                self.tally[top_preference]+=1
+
+            if max(self.tally.values())>total_votes/2:
+                self.winner = max(self.tally.items(), key=lambda x:x[1])[0]
+            else: 
+                losing_candidates.append(min(self.tally.items(), key=lambda x:x[1])[0])
