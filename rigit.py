@@ -4,9 +4,11 @@ import numpy as np
 import random
 
 def main():
-    laziness_rate = 0.2
+    laziness_rate = 0.35
     election_sample_size = 1000
+    num_voters = 1000
     verbose = False
+    quadratic_utilities = True
 
     if verbose: print('We assume party-like sets of utilities')
     candidates = ['a', 'b', 'c', 'd']
@@ -15,16 +17,20 @@ def main():
     right_utils = {'a': 0, 'b':6, 'c': 10, 'd':8}
     far_right_utils = {'a': 0, 'b':2, 'c': 5, 'd':10}
     utils = [far_left_utils, left_utils, right_utils, far_right_utils]
+    if quadratic_utilities:
+        for util in utils: 
+            for candidate in util.keys():
+                util[candidate] = util[candidate]**2
 
     regrets = {'approval':[], 'plurality':[], 'IRV':[], 'QV':[]}
     for i in range(election_sample_size):
         p = [0.4,0.35,0.2,0.05]
         random.shuffle(p)
-        voter_utils = np.random.choice(utils, size=500, p=p)
-        voter_laziness = np.random.choice([voter.Laziest_Voter, voter.Honest_Voter], size=500, p=[laziness_rate,1-laziness_rate])
+        voter_utils = np.random.choice(utils, size=num_voters, p=p)
+        voter_laziness = np.random.choice([voter.Laziest_Voter, voter.Honest_Voter], size=num_voters, p=[laziness_rate,1-laziness_rate])
         voters = [voter_laziness[v](utilities=voter_util) for v,voter_util in enumerate(voter_utils)]
         
-        if verbose: print('Under Approval Voting: ')
+        if verbose: print('Under Approval Voting:')
         vote = elections.ApprovalVote(voters, candidates)
         vote.compute_votes()
         vote.aggregate_votes()
