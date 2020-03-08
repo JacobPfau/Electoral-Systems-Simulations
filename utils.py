@@ -23,7 +23,7 @@ class NamedGraph():
 
 def find_cycle(upstream_vertices, target, max_depth, depth=0,):
     '''
-    Recursively performs DFS up to given depth to determine whether adding edges from initially passed upstream vertices to target will result in a cycle
+    Recursively performs DFS up to given depth to determine whether adding edges (from initially passed upstream vertices to target) will result in a cycle
     '''
     if not upstream_vertices:
         return False

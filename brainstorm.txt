@@ -14,8 +14,8 @@ What to model?
 
     Utilities: peaked at one candidate, trough at opposing party candidates, unknown for others
         How do we understand these utilities in order to make regret calculations somehow meaningful?
-            -economically? (expected vs actual return on election?)
-            -preferences with intensity? (~ normalized self-reported utilities)
+            -economically? (expected vs actual return on election? seems unrealistic to model people's prefernces on this basis)
+            -normalized self-reported utilities
             -tradit'l utility of immediate outcome of election (~ happiness at reading headline)
         Ideally other conclusions are relatively unaffected by above choice
 
