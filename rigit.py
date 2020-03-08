@@ -5,8 +5,8 @@ import random
 
 def main():
     laziness_rate = 0.35
-    election_sample_size = 1000
-    num_voters = 1000
+    election_sample_size = 100
+    num_voters = 100
     verbose = False
     quadratic_utilities = True
 
@@ -22,13 +22,13 @@ def main():
             for candidate in util.keys():
                 util[candidate] = util[candidate]**2
 
-    regrets = {'approval':[], 'plurality':[], 'IRV':[], 'QV':[]}
+    regrets = {'approval':[], 'plurality':[], 'IRV':[], 'QV':[], 'RP':[]}
     for i in range(election_sample_size):
         p = [0.4,0.35,0.2,0.05]
         random.shuffle(p)
         voter_utils = np.random.choice(utils, size=num_voters, p=p)
         voter_laziness = np.random.choice([voter.Laziest_Voter, voter.Honest_Voter], size=num_voters, p=[laziness_rate,1-laziness_rate])
-        voters = [voter_laziness[v](utilities=voter_util) for v,voter_util in enumerate(voter_utils)]
+        voters = [voter_laziness[v](utilities=voter_util, approval_rule='mean') for v,voter_util in enumerate(voter_utils)]
         
         if verbose: print('Under Approval Voting:')
         vote = elections.ApprovalVote(voters, candidates)
@@ -62,6 +62,17 @@ def main():
         if verbose: print('Votes by candidate', top_2)
         if verbose: print('Regret:', vote.regret)
 
+        if verbose: print('Under RP: ')
+        for person in voters: person.vote = dict()
+        vote = elections.RankedPairsVote(voters, candidates)
+        vote.compute_votes()
+        vote.aggregate_votes()
+        vote.get_regret()
+        regrets['RP'].append(vote.regret)
+        top_2 = sorted(list(vote.tally.items()), key=lambda x: x[1], reverse=True)[:2]
+        if verbose: print('Votes by candidate', top_2)
+        if verbose: print('Regret:', vote.regret)
+
         if verbose: print('Under QV: ')
         for person in voters: person.vote = dict()
         vote = elections.QuadraticVote(voters, candidates)
@@ -76,6 +87,7 @@ def main():
         if verbose: print('_________________________')
 
 
-    print('Plurality %.4f, IRV %.4f, Approval %.4f, QV %.4f' %(np.mean(regrets['plurality']), np.mean(regrets['IRV']), np.mean(regrets['approval']),  np.mean(regrets['QV'])))
+    print('Plurality %.4f, IRV %.4f, RP %.4f, Approval %.4f, QV %.4f' 
+    %(np.mean(regrets['plurality']), np.mean(regrets['IRV']), np.mean(regrets['RP']), np.mean(regrets['approval']),  np.mean(regrets['QV'])))
 if __name__=="__main__":
     main() 

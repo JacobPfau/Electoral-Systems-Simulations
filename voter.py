@@ -2,7 +2,7 @@ import numpy as np
 import copy
 
 class Voter():
-    def __init__(self, ideology=None, utilities=None, beliefs=None):
+    def __init__(self, ideology=None, utilities=None, beliefs=None, **kwargs):
         '''
         Params
         ideology: np array, defines the voters location in n-dimensional ideology vector space
@@ -25,6 +25,7 @@ class Voter():
         elif electoral_system=='PluralityVote': self.plurality_policy()
         elif electoral_system=='InstantRunoffVote': self.irv_policy()
         elif electoral_system=='QuadraticVote': self.quadratic_policy()
+        elif electoral_system=='RankedPairsVote': self.rp_policy()
 
     def approval_policy(self,):
         raise NotImplementedError
@@ -34,14 +35,32 @@ class Voter():
         raise NotImplementedError
     def quadratic_policy(self,):
         raise NotImplementedError
+    def rp_policy(self,):
+        raise NotImplementedError
 
 class Honest_Voter(Voter):
+    '''
+    Voter class modelling self-interested voters without strategic/manipulative voting.
+    For some electoral systems the honest voter class is non-unique in which case an arg may be passed to specify the desired behavior.
+
+    Args:
+    approval_rule: str in ['median', 'mean'], Voter will approval vote for all candidates above their median, or mean utility respectively.
+    '''
+
+    def __init__(self, approval_rule='mean', ideology=None, utilities=None, beliefs=None, **kwargs):
+        super().__init__(ideology=ideology, utilities=utilities, beliefs=beliefs, **kwargs)
+        self.approval_rule = approval_rule
+
     def approval_policy(self,):
-        # Votes for all candidates with >= voters median utility
-        median_utility = np.median(list(self.utilities.values()))
+        if self.approval_rule == 'median':
+            utility_threshold = np.median(list(self.utilities.values()))
+        elif self.approval_rule == 'mean':
+            utility_threshold = np.mean(list(self.utilities.values()))
+        else:
+            raise NotImplementedError
         votes = {candidate:0 for candidate in self.utilities.keys()}
         for candidate, utility in self.utilities.items():
-            if utility>=median_utility: votes[candidate]=1
+            if utility>=utility_threshold: votes[candidate]=1
         self.vote = votes
         return self.vote
 
@@ -51,6 +70,11 @@ class Honest_Voter(Voter):
         return self.vote
     
     def irv_policy(self,):
+        sorted_candidates = sorted(list(self.utilities.items()), key=lambda x:x[1])
+        self.vote = [pair[0] for pair in sorted_candidates]
+        return self.vote
+
+    def rp_policy(self,):
         sorted_candidates = sorted(list(self.utilities.items()), key=lambda x:x[1])
         self.vote = [pair[0] for pair in sorted_candidates]
         return self.vote
@@ -96,6 +120,18 @@ class Laziest_Voter(Honest_Voter):
         bullet_utilities = [1 if value[1]==max_utility else 0 for value in utility_list]
         utility_mean, utility_std = np.mean(bullet_utilities), np.std(bullet_utilities)
         self.vote = {pair[0]:(bullet_utilities[p]-utility_mean)/utility_std for p,pair in enumerate(utility_list)}
+        return self.vote
+
+    def rp_policy(self):
+        '''
+        Swap one of the non-favorite candidates with adjacent candidate
+        '''
+        sorted_candidates = sorted(list(self.utilities.items()), key=lambda x:x[1])
+        self.vote = [pair[0] for pair in sorted_candidates]
+        swap = np.random.choice(range(1,len(self.vote)-1))
+        to_swap = copy.copy(self.vote[swap])
+        self.vote[swap] = self.vote[swap-1]
+        self.vote[swap-1] = to_swap
         return self.vote
 
 class Lazy_Voter(Honest_Voter):

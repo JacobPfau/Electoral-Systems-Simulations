@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import utils
 
 class ElectoralSystem(ABC):
 
@@ -81,3 +82,37 @@ class QuadraticVote(ElectoralSystem):
             for candidate, vote in voter.vote.items():
                 self.tally[candidate] = self.tally[candidate]+vote
         self.winner = max(self.tally.items(), key=lambda x:x[1])[0]
+
+class RankedPairsVote(ElectoralSystem):
+    '''
+    For a definition see for instance, https://www.aaai.org/ocs/index.php/AAAI/AAAI12/paper/download/5018/5461
+    Tie-breaks have not been properly implemented
+    '''
+    name = 'RankedPairsVote'
+
+    def aggregate_votes(self):
+        # First tally votes
+        for candidate in self.candidates:
+            for other_candidate in self.candidates:
+                if candidate!=other_candidate: self.tally[(candidate,other_candidate)]=0
+        for voter in self.voters:
+            for c,candidate in enumerate(voter.vote[::-1]):
+                if c==len(voter.vote)-1: break
+                for worse_candidate in voter.vote[len(voter.vote)-c-2::-1]:
+                    self.tally[(candidate,worse_candidate)]+=1
+        
+        # Second build preference DAG
+        ranked_pairs = list(self.tally.items())
+        ranked_pairs = sorted(ranked_pairs, key=lambda tally_pair: tally_pair[1], reverse=True)
+        ranked_pairs = [candidate_votes[0] for candidate_votes in ranked_pairs]
+
+        self.candidate_dag = utils.NamedGraph(vertices = {candidate:utils.Vertex(name=candidate) for candidate in self.candidates})
+        for p,pair in enumerate(ranked_pairs):
+            pair_source, pair_target = self.candidate_dag.vertices[pair[0]], self.candidate_dag.vertices[pair[1]]
+            if not utils.find_cycle([pair_source], pair_target, max_depth=p):
+                self.candidate_dag.add_edge(pair_source.name, pair_target.name)
+        
+        # Third find a source with in-degree = 0
+        for vertex in self.candidate_dag.vertices.values():
+            if len(vertex.in_vertices)==0 and len(vertex.out_vertices)>0: # Second condition guarantees this candidate had some votes cast for them
+                self.winner = vertex.name
