@@ -1,4 +1,4 @@
 # Electoral-Systems-Simulations
-Simulations comparing the efficacy of electoral systems under various conditions.
+### Simulations comparing the efficacy of electoral systems under various conditions.
 
-### Run rigit.py to get results of a first simulation.
+### Run regret_experiment_1.py to get results of a first simulation.

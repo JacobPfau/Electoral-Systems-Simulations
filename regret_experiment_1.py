@@ -4,11 +4,14 @@ import elections
 import numpy as np
 import random
 import argparse
+import seaborn as sns
+import pandas as pd
+import matplotlib.pyplot as plt
 
 # A simple model for elections.
 # 
 
-def main(num_elections, num_voters, laziness, verbose, quadratic, electoral_systems):
+def main(num_elections, num_voters, laziness, verbose, quadratic, electoral_systems, display):
 
     if verbose: print('We assume party-like sets of utilities')
     candidates = ['a', 'b', 'c', 'd']
@@ -32,28 +35,38 @@ def main(num_elections, num_voters, laziness, verbose, quadratic, electoral_syst
         voters = [voter_laziness[v](utilities=voter_util, approval_rule='mean') for v,voter_util in enumerate(voter_utils)]
 
         for system in electoral_systems:
-            if system=='AP': vote = elections.ApprovalVote(voters, candidates)
-            elif system=='PL': vote = elections.PluralityVote(voters, candidates)
+            if system=='Approval': vote = elections.ApprovalVote(voters, candidates)
+            elif system=='Plurality': vote = elections.PluralityVote(voters, candidates)
             elif system=='IRV': vote = elections.InstantRunoffVote(voters, candidates)
-            elif system=='RP': vote = elections.RankedPairsVote(voters, candidates)
-            elif system=='QV': vote = elections.QuadraticVote(voters, candidates)
+            elif system=='Ranked Pairs': vote = elections.RankedPairsVote(voters, candidates)
+            elif system=='Quadratic': vote = elections.QuadraticVote(voters, candidates)
             vote.compute_votes()
             vote.aggregate_votes()
             vote.get_regret()
             regrets[system].append(vote.regret)
             # top_2 = sorted(list(vote.tally.items()), key=lambda x: x[1], reverse=True)[:2]
 
-    for system in electoral_systems:
-        print(system, round(np.mean(regrets[system]),1))
+    if display in [1,2]:
+        for system in electoral_systems:
+            print('Mean regret by electoral system:')
+            print(system, round(np.mean(regrets[system]),1))
+    if display in [0,2]:
+        regret_df = pd.DataFrame.from_dict(regrets)
+        order = regret_df.mean().sort_values().index
+        regret_plot = sns.barplot(data=regret_df, orient='h', palette='Set2', order=order).set_title('Distribution of regrets under various electoral systems')
+        plt.show()
+
+    
 
 if __name__=="__main__":
 
     parser = argparse.ArgumentParser(description='Run simulations of voters voting under different electoral systems and compare regret (i.e. utility lost)')
     parser.add_argument('-ne', '--num_elections', type=int, default=100, help='Set number of votes simulated')
-    parser.add_argument('-nv', '--num_voters', type=int, default=100, help='Set number of voters per election')
-    parser.add_argument('-e', '--electoral_systems', type=str, nargs='*', default=['PL', 'IRV', 'RP', 'AP', 'QV'], help='Set which electoral systems to simulate')
+    parser.add_argument('-nv', '--num_voters', type=int, default=250, help='Set number of voters per election')
+    parser.add_argument('-e', '--electoral_systems', type=str, nargs='*', default=['Plurality', 'IRV', 'Ranked Pairs', 'Approval', 'Quadratic'], help='Set which electoral systems to simulate')
     parser.add_argument('-l', '--laziness', type=float, default=0.33, help='Set percentage of voterbase who will be drawn from lazy voter class')
     parser.add_argument('-v', '--verbose', action='store_true', help='Set output verbosity')
+    parser.add_argument('-d', '--display', type=int, default=0, help='Set plot (0), print (1) or both (2)')
     parser.add_argument('-q', '--quadratic', action='store_true', help='Square voter utilities')
 
     kwargs = parser.parse_args()
